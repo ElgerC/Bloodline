@@ -7,7 +7,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpHeigt;
-    private Vector2 move; 
+    private Vector2 move;
+
+    [SerializeField] private float groundCheckRange;
+    [SerializeField] private LayerMask groundCheckLayermask;
+    [SerializeField] private bool grounded = false;
+    
 
     private Rigidbody rb;
 
@@ -26,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
+        if (ctx.performed && grounded)
         {
             rb.AddForce(transform.up*jumpHeigt,ForceMode.Impulse);
         }
@@ -40,5 +45,19 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.velocity = curMove;
         }
+
+        GroundCheck();
+    }
+
+    private void GroundCheck()
+    {
+            RaycastHit[] hit = Physics.RaycastAll(transform.position, -transform.up, groundCheckRange, groundCheckLayermask);
+            if (hit.Length > 0)
+            {
+                grounded = true;
+            } else
+            {
+                grounded = false;
+            }
     }
 }
