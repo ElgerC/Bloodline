@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private bool canMove;
 
-    [SerializeField] private float dashSpeed;
+    [SerializeField] private float dashDist;
     [SerializeField] private float dashDur;
 
     private bool dashing = false;
@@ -114,9 +114,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        float framerate = 1 / Time.smoothDeltaTime;
+
         if (dashing)
         {
-            transform.position += transform.forward * dashSpeed * Time.deltaTime;
+            float frameDist
+            //transform.position += transform.forward * dashSpeed * Time.deltaTime;
         } else
         {
             //Calculating the players input to movement directions
