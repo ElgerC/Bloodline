@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
@@ -19,6 +21,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundCheckLayermask;
     [SerializeField] private bool grounded = false;
 
+    [SerializeField] private float sensX;
+    [SerializeField] private float sensY;
+
+    private float xRotation;
+    private float yRotation;
+
+    [SerializeField] Vector3 test;
 
 
     private Animator animator;
@@ -29,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
     private void Start()
     {
@@ -68,14 +80,21 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        Vector3 curMove = new Vector3(move.x * moveSpeed, rb.velocity.y, move.y * moveSpeed);
+        test = transform.forward;
 
-        if (curMove.x != 0 || curMove.z != 0)
+        Vector3 curMoveZ = transform.forward.normalized * move.y * moveSpeed;
+        Vector3 curMoveX = transform.right.normalized * move.x * moveSpeed;
+
+        Vector3 curVelo = new Vector3(0, rb.velocity.y, 0);
+
+        if (curMoveX.x != 0 || curMoveZ.z != 0)
         {
-            rb.velocity = curMove;
+            rb.velocity = curMoveX + curMoveZ + curVelo;
         }
 
         GroundCheck();
+
+        MoveCam();
     }
 
     private void GroundCheck()
@@ -89,5 +108,21 @@ public class PlayerMovement : MonoBehaviour
         {
             grounded = false;
         }
+    }
+
+    private void MoveCam()
+    {
+        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
+
+        yRotation += mouseX;
+        xRotation -= mouseY;
+
+        Debug.Log(xRotation);
+        xRotation = Mathf.Clamp(xRotation, -90, 90);
+
+
+        transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        Camera.main.transform.localRotation = Quaternion.Euler(xRotation,0, 0);
     }
 }
