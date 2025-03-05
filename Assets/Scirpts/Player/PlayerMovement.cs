@@ -36,13 +36,14 @@ public class PlayerMovement : MonoBehaviour
     //Components
     private Animator animator;
     private Rigidbody rb;
-    private Collider[] coliders;
+    [SerializeField] private Collider[] coliders;
 
     #region Dash 
     [Header("Dash")]
     //dash base
     [SerializeField] private float dashDist;
     [SerializeField] private float dashDur;
+    [SerializeField] private float endingDur;
     private float frameDist;
 
     private bool dashing = false;
@@ -122,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
         dashing = true;
         rb.useGravity = false;
 
-        for(int i = 2; coliders.Length < i; i++) 
+        for (int i = 2; coliders.Length < i; i++)
         {
             coliders[i].enabled = false;
         }
@@ -149,20 +150,17 @@ public class PlayerMovement : MonoBehaviour
                 StopCoroutine(DashTimer());
             }
         }
-
         if (dashing)
         {
-            Vector3 dir = new Vector3(transform.forward.normalized.x * frameDist, (Camera.main.transform.localRotation.eulerAngles.x / 3.6f / 1000) * frameDist, transform.forward.normalized.z * frameDist);
-            Debug.Log(Camera.main.transform.localRotation.eulerAngles.x / 3.6 / 100);
-
-            rb.velocity = dir;
+            Vector3 dir = new Vector3(Camera.main.transform.forward.normalized.x * frameDist, 0, transform.forward.normalized.z * frameDist);
+            rb.AddForce(Camera.main.transform.forward.normalized * frameDist, ForceMode.VelocityChange);
             //rb.MovePosition(transform.position + dir);
         }
     }
 
     private void Update()
     {
-        if (!dashing)    
+        if (!dashing)
         {
             //Calculating the players input to movement directions
             Vector3 curMoveZ = transform.forward.normalized * move.y * moveSpeed;
@@ -172,6 +170,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 curVelo = new Vector3(0, rb.velocity.y, 0);
 
             //Setting the momentum to the above vectors
+
             rb.velocity = curMoveX + curMoveZ + curVelo;
         }
 
@@ -212,9 +211,10 @@ public class PlayerMovement : MonoBehaviour
         //Keeping the rotation between 2 values
         xRotation = Mathf.Clamp(xRotation, -90, 90);
 
-        //setting the player and camera rotation to match with the saved ones
-        transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        transform.localRotation = Quaternion.Euler(0, yRotation, 0);
         Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+        //setting the player and camera rotation to match with the saved ones
+
     }
 
     private void OnDrawGizmos()
