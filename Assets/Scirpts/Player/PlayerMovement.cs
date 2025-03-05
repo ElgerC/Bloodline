@@ -36,19 +36,27 @@ public class PlayerMovement : MonoBehaviour
     //Components
     private Animator animator;
     private Rigidbody rb;
+    private Collider[] coliders;
 
-    [SerializeField] private bool canMove;
-
+    #region Dash 
+    [Header("Dash")]
+    //dash base
     [SerializeField] private float dashDist;
     [SerializeField] private float dashDur;
+    private float frameDist;
 
     private bool dashing = false;
 
+    //Dash check
+    [SerializeField] private Vector3 checkBoxSizeHalf;
+    [SerializeField] Transform checkBoxPos;
+    #endregion
     private void Awake()
     {
         //asignment
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        coliders = GetComponents<Collider>();
 
         //setting the cursor and hiding it
         Cursor.lockState = CursorLockMode.Locked;
@@ -99,28 +107,62 @@ public class PlayerMovement : MonoBehaviour
 
     public void Dash(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
+        if (ctx.performed && !dashing)
         {
+            frameDist = (dashDist / dashDur) * Time.fixedDeltaTime;
+
             StartCoroutine(DashTimer());
+
+            MoveCam();
         }
     }
 
     IEnumerator DashTimer()
     {
         dashing = true;
+        rb.useGravity = false;
+
+        for(int i = 2; coliders.Length < i; i++) 
+        {
+            coliders[i].enabled = false;
+        }
         yield return new WaitForSeconds(dashDur);
         dashing = false;
+        rb.useGravity = true;
+        for (int i = 2; coliders.Length < i; i++)
+        {
+            coliders[i].enabled = true;
+        }
+    }
+    private void FixedUpdate()
+    {
+        Collider[] hits = Physics.OverlapBox(checkBoxPos.position, checkBoxSizeHalf, Camera.main.transform.rotation, groundCheckLayermask);
+
+        if (hits.Length > 0)
+        {
+            dashing = false;
+
+            if (dashing)
+            {
+                rb.useGravity = true;
+
+                StopCoroutine(DashTimer());
+            }
+        }
+
+        if (dashing)
+        {
+            Vector3 dir = new Vector3(transform.forward.normalized.x * frameDist, (Camera.main.transform.localRotation.eulerAngles.x / 3.6f / 1000) * frameDist, transform.forward.normalized.z * frameDist);
+            Debug.Log(Camera.main.transform.localRotation.eulerAngles.x / 3.6 / 100);
+
+            rb.velocity = dir;
+            //rb.MovePosition(transform.position + dir);
+        }
     }
 
     private void Update()
     {
-        float framerate = 1 / Time.smoothDeltaTime;
-
-        if (dashing)
-        {
-            float frameDist
-            //transform.position += transform.forward * dashSpeed * Time.deltaTime;
-        } else
+        if (!dashing)    
         {
             //Calculating the players input to movement directions
             Vector3 curMoveZ = transform.forward.normalized * move.y * moveSpeed;
@@ -132,7 +174,6 @@ public class PlayerMovement : MonoBehaviour
             //Setting the momentum to the above vectors
             rb.velocity = curMoveX + curMoveZ + curVelo;
         }
-
 
         GroundCheck();
 
@@ -174,5 +215,10 @@ public class PlayerMovement : MonoBehaviour
         //setting the player and camera rotation to match with the saved ones
         transform.rotation = Quaternion.Euler(0, yRotation, 0);
         Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawCube(checkBoxPos.position, checkBoxSizeHalf * 2);
     }
 }
