@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
@@ -45,6 +46,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashDur;
     [SerializeField] private float endingDur;
     private float frameDist;
+
+    [SerializeField] private LayerMask normalLayerMask;
+    [SerializeField] private LayerMask dashLayerMask;
 
     private bool dashing = false;
 
@@ -123,16 +127,16 @@ public class PlayerMovement : MonoBehaviour
         dashing = true;
         rb.useGravity = false;
 
-        for (int i = 2; coliders.Length < i; i++)
+        for (int i = 0; coliders.Length > i; i++)
         {
-            coliders[i].enabled = false;
+            coliders[i].excludeLayers = dashLayerMask;
         }
         yield return new WaitForSeconds(dashDur);
         dashing = false;
         rb.useGravity = true;
-        for (int i = 2; coliders.Length < i; i++)
+        for (int i = 0; coliders.Length > i; i++)
         {
-            coliders[i].enabled = true;
+            coliders[i].excludeLayers = normalLayerMask;
         }
     }
     private void FixedUpdate()
@@ -141,6 +145,15 @@ public class PlayerMovement : MonoBehaviour
 
         if (hits.Length > 0)
         {
+            for(int i = 0; i < hits.Length; i++)
+            {
+                IInteractable interact = hits[i].GetComponent<IInteractable>();
+                if (interact != null)
+                {
+                    interact.Interact(gameObject);
+                }
+            }
+
             dashing = false;
 
             if (dashing)
@@ -171,7 +184,8 @@ public class PlayerMovement : MonoBehaviour
 
             //Setting the momentum to the above vectors
 
-            rb.velocity = curMoveX + curMoveZ + curVelo;
+            if (Mathf.Abs(rb.velocity.magnitude) < Mathf.Abs((curMoveX + curMoveZ + curVelo).magnitude))
+                rb.velocity = curMoveX + curMoveZ + curVelo;
         }
 
         GroundCheck();
@@ -201,12 +215,12 @@ public class PlayerMovement : MonoBehaviour
         //Inspired by https://www.youtube.com/watch?v=f473C43s8nE
 
         //Getting the direction the mouse is moving in
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
+        float mouseX = Input.GetAxisRaw("Mouse X") * sensX;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
 
         //removing the input of the saved rotation
-        yRotation += mouseX;
-        xRotation -= mouseY;
+        yRotation += mouseX * Time.deltaTime;
+        xRotation -= mouseY * Time.deltaTime;
 
         //Keeping the rotation between 2 values
         xRotation = Mathf.Clamp(xRotation, -90, 90);
@@ -214,7 +228,6 @@ public class PlayerMovement : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, yRotation, 0);
         Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
         //setting the player and camera rotation to match with the saved ones
-
     }
 
     private void OnDrawGizmos()
