@@ -143,9 +143,9 @@ public class PlayerMovement : MonoBehaviour
     {
         Collider[] hits = Physics.OverlapBox(checkBoxPos.position, checkBoxSizeHalf, Camera.main.transform.rotation, groundCheckLayermask);
 
-        if (hits.Length > 0)
+        if (hits.Length > 0 && dashing)
         {
-            for(int i = 0; i < hits.Length; i++)
+            for (int i = 0; i < hits.Length; i++)
             {
                 IInteractable interact = hits[i].GetComponent<IInteractable>();
                 if (interact != null)
@@ -155,13 +155,10 @@ public class PlayerMovement : MonoBehaviour
             }
 
             dashing = false;
+            rb.useGravity = true;
 
-            if (dashing)
-            {
-                rb.useGravity = true;
+            StopCoroutine(DashTimer());
 
-                StopCoroutine(DashTimer());
-            }
         }
         if (dashing)
         {
@@ -232,6 +229,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawCube(checkBoxPos.position, checkBoxSizeHalf * 2);
+        if (dashing)
+            Gizmos.DrawCube(checkBoxPos.position, checkBoxSizeHalf * 2);
     }
 }
