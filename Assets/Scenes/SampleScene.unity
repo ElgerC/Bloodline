@@ -810,7 +810,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7434907569551713299, guid: 5fe60b96b576df44bad6e41d7dd7a496, type: 3}
       propertyPath: dashDist
-      value: 15
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7434907569551713299, guid: 5fe60b96b576df44bad6e41d7dd7a496, type: 3}
+      propertyPath: dashSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8673188474578490613, guid: 5fe60b96b576df44bad6e41d7dd7a496, type: 3}
       propertyPath: m_LocalPosition.x

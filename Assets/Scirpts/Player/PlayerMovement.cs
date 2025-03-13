@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using Unity.XR.GoogleVr;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
@@ -40,7 +41,17 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Collider[] coliders;
 
+    private bool dashing = false;
 
+    [SerializeField] private float dashDist;
+    [SerializeField] private float performedDist;
+    [SerializeField] private float dashSpeed;
+
+    //Dash check
+    [SerializeField] private Vector3 checkBoxSizeHalf;
+    [SerializeField] Transform checkBoxPos;
+
+    private Vector3 lastPos;
     private void Awake()
     {
         //asignment
@@ -68,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
     public void Jump(InputAction.CallbackContext ctx)
     {
         //Checking if the player is grounded
-        if (ctx.performed && grounded && canMove)
+        if (ctx.performed && grounded && !dashing)
         {
             //giving the player a boost of upwards momentum
             rb.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
@@ -77,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Crouch(InputAction.CallbackContext ctx)
     {
-        if(canMove)
+        if (!dashing)
         {
             //when the button is held
             if (ctx.started)
@@ -99,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
-        if (canMove)
+        if (!dashing)   
         {
             //Vector3 dir = new Vector3(Camera.main.transform.forward.x,0,Camera.main.transform.forward.z);
 
@@ -114,13 +125,52 @@ public class PlayerMovement : MonoBehaviour
 
             if (Mathf.Abs(rb.velocity.magnitude) < Mathf.Abs((curMoveX + curMoveZ + curVelo).magnitude))
                 rb.velocity = curMoveX + curMoveZ + curVelo;
+
+            GroundCheck();
+        } else
+        {
+            performedDist += Vector3.Distance(lastPos,transform.position); 
+            lastPos = transform.position;
+
+            if (performedDist >= dashDist)
+            {
+                dashing = false;
+            } else
+            {
+                rb.velocity = Camera.main.transform.forward * dashSpeed;
+            }
         }
-
-        GroundCheck();
-
         MoveCam();
     }
 
+    private void FixedUpdate()
+    {
+        Collider[] hits = Physics.OverlapBox(checkBoxPos.position, checkBoxSizeHalf, Camera.main.transform.rotation, groundCheckLayermask);
+
+        if (hits.Length > 0 && dashing)
+        {
+            for (int i = 0; i < hits.Length; i++)
+            {
+                IInteractable interact = hits[i].GetComponent<IInteractable>();
+                if (interact != null)
+                {
+                    interact.Interact(gameObject);
+                }
+            }
+
+            dashing = false;
+            rb.useGravity = true;
+        }
+    }
+    public void Dash(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed && !dashing)
+        {
+            performedDist = 0;
+            lastPos = transform.position;
+            dashing = true;
+        }
+    }
     private void GroundCheck()
     {
         //Checking for objects below the player and setting a bool if yes
@@ -156,11 +206,5 @@ public class PlayerMovement : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, yRotation, 0);
         Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
         //setting the player and camera rotation to match with the saved ones
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (dashing)
-            Gizmos.DrawCube(checkBoxPos.position, checkBoxSizeHalf * 2);
     }
 }

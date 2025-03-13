@@ -29,12 +29,12 @@ public class BoxScript : MonoBehaviour, IInteractable
         if (Mathf.Abs(other.transform.forward.z) > Mathf.Abs(other.transform.forward.x))
         {
             launchDir = new Vector3(0, 0, other.transform.forward.normalized.z);
-            force = otherRb.velocity.z;
+            force = otherRb.velocity.z/2;
         }
         else
         {
             launchDir = new Vector3(other.transform.forward.normalized.x, 0, 0);
-            force = otherRb.velocity.x;
+            force = otherRb.velocity.x/2;
         }
 
         StartCoroutine(MovePosition(transform.position + (launchDir * Mathf.Abs(force))));
