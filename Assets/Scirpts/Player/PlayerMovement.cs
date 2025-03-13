@@ -41,17 +41,26 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Collider[] coliders;
 
+    #region
     private bool dashing = false;
 
+    [Header("Dash")]
     [SerializeField] private float dashDist;
     [SerializeField] private float performedDist;
     [SerializeField] private float dashSpeed;
+
+    [SerializeField] private float dashCD;
+    [SerializeField] private bool canDash;
+
+    [SerializeField] private LayerMask normalLayerMask;
+    [SerializeField] private LayerMask dashLayerMask;
 
     //Dash check
     [SerializeField] private Vector3 checkBoxSizeHalf;
     [SerializeField] Transform checkBoxPos;
 
     private Vector3 lastPos;
+    #endregion
     private void Awake()
     {
         //asignment
@@ -84,6 +93,13 @@ public class PlayerMovement : MonoBehaviour
             //giving the player a boost of upwards momentum
             rb.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
         }
+    }
+    
+    private IEnumerator DashCD()
+    {
+        canDash = false;
+        yield return new WaitForSeconds(5);
+        canDash = true;
     }
 
     public void Crouch(InputAction.CallbackContext ctx)
@@ -158,18 +174,35 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
-            dashing = false;
-            rb.useGravity = true;
+            EndDash();
         }
     }
     public void Dash(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && !dashing)
+        if (ctx.performed && !dashing && canDash)
         {
             performedDist = 0;
             lastPos = transform.position;
             dashing = true;
+
+            for (int i = 0; coliders.Length > i; i++)
+            {
+                coliders[i].excludeLayers = dashLayerMask;
+            }
+
+            StartCoroutine(DashCD());
         }
+    }
+
+    private void EndDash()
+    {
+        for (int i = 0; coliders.Length > i; i++)
+        {
+            coliders[i].excludeLayers = normalLayerMask;
+        }
+
+        dashing = false;
+        rb.useGravity = true;
     }
     private void GroundCheck()
     {
@@ -197,8 +230,8 @@ public class PlayerMovement : MonoBehaviour
         float mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
 
         //removing the input of the saved rotation
-        yRotation += mouseX * Time.deltaTime;
-        xRotation -= mouseY * Time.deltaTime;
+        yRotation += mouseX * Time.fixedDeltaTime;
+        xRotation -= mouseY * Time.fixedDeltaTime;
 
         //Keeping the rotation between 2 values
         xRotation = Mathf.Clamp(xRotation, -90, 90);

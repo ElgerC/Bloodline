@@ -5,54 +5,45 @@ using UnityEngine;
 enum states
 {
     stationary,
-    moving,
-    falling
+    moving
 }
 public class BoxScript : MonoBehaviour, IInteractable
 {
     [SerializeField] private float speed;
-    private Vector3 startPos;
+    [SerializeField] private float minSpeed;
 
-    private states state;
+    private Rigidbody body;
 
     private void Awake()
     {
-        state = states.stationary;
+        body = GetComponent<Rigidbody>();
     }
     public void Interact(GameObject other)
     {
         Vector3 launchDir;
         float force;
+        body.isKinematic = false;
 
         Rigidbody otherRb = other.GetComponent<Rigidbody>();
 
         if (Mathf.Abs(other.transform.forward.z) > Mathf.Abs(other.transform.forward.x))
         {
             launchDir = new Vector3(0, 0, other.transform.forward.normalized.z);
-            force = otherRb.velocity.z/2;
+            force = otherRb.velocity.z;
         }
         else
         {
             launchDir = new Vector3(other.transform.forward.normalized.x, 0, 0);
-            force = otherRb.velocity.x/2;
+            force = otherRb.velocity.x;
         }
 
-        StartCoroutine(MovePosition(transform.position + (launchDir * Mathf.Abs(force))));
+        body.AddForce(launchDir * Mathf.Abs(force), ForceMode.Impulse);
     }
-
-    private IEnumerator MovePosition(Vector3 target)
+    private void Update()
     {
-        state = states.moving;
-
-        startPos = transform.position;
-        float time = (Vector3.Distance(startPos, target) / speed)*Time.deltaTime;
-
-        while ((transform.position.x != target.x || transform.position.z != target.z) && state == states.moving)
+        if (body.velocity.magnitude <= minSpeed)
         {
-            yield return new WaitForSeconds(Time.deltaTime);
-            transform.position = Vector3.Lerp(startPos,target,time);
-            time += Time.deltaTime;
-        }
-        state = states.stationary;
+            body.isKinematic = true;
+        } 
     }
 }
