@@ -22,16 +22,22 @@ public class BoxScript : MonoBehaviour, IInteractable
     public void Interact(GameObject other)
     {
         Vector3 launchDir;
-        if(Mathf.Abs(other.transform.forward.z) > Mathf.Abs(other.transform.forward.x)) 
+        float force;
+
+        Rigidbody otherRb = other.GetComponent<Rigidbody>();
+
+        if (Mathf.Abs(other.transform.forward.z) > Mathf.Abs(other.transform.forward.x))
         {
-            launchDir = new Vector3(0,0,other.transform.forward.normalized.z);
+            launchDir = new Vector3(0, 0, other.transform.forward.normalized.z);
+            force = otherRb.velocity.z;
         }
         else
         {
             launchDir = new Vector3(other.transform.forward.normalized.x, 0, 0);
+            force = otherRb.velocity.x;
         }
 
-        StartCoroutine(MovePosition(transform.position + launchDir * 5));
+        StartCoroutine(MovePosition(transform.position + (launchDir * Mathf.Abs(force))));
     }
 
     private IEnumerator MovePosition(Vector3 target)

@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
 {
     #region movement
     [Header("WASD Movement")]
+    public bool canMove;
     [SerializeField] private float normMoveSpeed;
     [SerializeField] private float crouchMoveSpeed;
 
@@ -37,25 +38,9 @@ public class PlayerMovement : MonoBehaviour
     //Components
     private Animator animator;
     private Rigidbody rb;
-    [SerializeField] private Collider[] coliders;
+    private Collider[] coliders;
 
-    #region Dash 
-    [Header("Dash")]
-    //dash base
-    [SerializeField] private float dashDist;
-    [SerializeField] private float dashDur;
-    [SerializeField] private float endingDur;
-    private float frameDist;
 
-    [SerializeField] private LayerMask normalLayerMask;
-    [SerializeField] private LayerMask dashLayerMask;
-
-    private bool dashing = false;
-
-    //Dash check
-    [SerializeField] private Vector3 checkBoxSizeHalf;
-    [SerializeField] Transform checkBoxPos;
-    #endregion
     private void Awake()
     {
         //asignment
@@ -83,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
     public void Jump(InputAction.CallbackContext ctx)
     {
         //Checking if the player is grounded
-        if (ctx.performed && grounded)
+        if (ctx.performed && grounded && canMove)
         {
             //giving the player a boost of upwards momentum
             rb.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
@@ -92,91 +77,37 @@ public class PlayerMovement : MonoBehaviour
 
     public void Crouch(InputAction.CallbackContext ctx)
     {
-        //when the button is held
-        if (ctx.started)
+        if(canMove)
         {
-            //animating and slowing the players jump and movement
-            animator.SetBool("IsCrouching", true);
-            moveSpeed = crouchMoveSpeed;
-            jumpHeight = crouchJumpHeight;
-        }
-        //When button is released
-        else if (ctx.canceled)
-        {
-            //animating and reseting the players speed
-            animator.SetBool("IsCrouching", false);
-            moveSpeed = normMoveSpeed;
-            jumpHeight = normJumpHeight;
-        }
-    }
-
-    public void Dash(InputAction.CallbackContext ctx)
-    {
-        if (ctx.performed && !dashing)
-        {
-            frameDist = (dashDist / dashDur) * Time.fixedDeltaTime;
-
-            StartCoroutine(DashTimer());
-
-            MoveCam();
-        }
-    }
-
-    IEnumerator DashTimer()
-    {
-        dashing = true;
-        rb.useGravity = false;
-
-        for (int i = 0; coliders.Length > i; i++)
-        {
-            coliders[i].excludeLayers = dashLayerMask;
-        }
-        yield return new WaitForSeconds(dashDur);
-        dashing = false;
-        rb.useGravity = true;
-        for (int i = 0; coliders.Length > i; i++)
-        {
-            coliders[i].excludeLayers = normalLayerMask;
-        }
-    }
-    private void FixedUpdate()
-    {
-        Collider[] hits = Physics.OverlapBox(checkBoxPos.position, checkBoxSizeHalf, Camera.main.transform.rotation, groundCheckLayermask);
-
-        if (hits.Length > 0 && dashing)
-        {
-            for (int i = 0; i < hits.Length; i++)
+            //when the button is held
+            if (ctx.started)
             {
-                IInteractable interact = hits[i].GetComponent<IInteractable>();
-                if (interact != null)
-                {
-                    interact.Interact(gameObject);
-                }
+                //animating and slowing the players jump and movement
+                animator.SetBool("IsCrouching", true);
+                moveSpeed = crouchMoveSpeed;
+                jumpHeight = crouchJumpHeight;
             }
-
-            dashing = false;
-            rb.useGravity = true;
-
-            StopCoroutine(DashTimer());
-
-        }
-        if (dashing)
-        {
-            Vector3 dir = new Vector3(Camera.main.transform.forward.normalized.x * frameDist, 0, transform.forward.normalized.z * frameDist);
-            rb.AddForce(Camera.main.transform.forward.normalized * frameDist, ForceMode.VelocityChange);
-            //rb.MovePosition(transform.position + dir);
+            //When button is released
+            else if (ctx.canceled)
+            {
+                //animating and reseting the players speed
+                animator.SetBool("IsCrouching", false);
+                moveSpeed = normMoveSpeed;
+                jumpHeight = normJumpHeight;
+            }
         }
     }
-
     private void Update()
     {
-        if (!dashing)
+        if (canMove)
         {
+            //Vector3 dir = new Vector3(Camera.main.transform.forward.x,0,Camera.main.transform.forward.z);
+
             //Calculating the players input to movement directions
             Vector3 curMoveZ = transform.forward.normalized * move.y * moveSpeed;
             Vector3 curMoveX = transform.right.normalized * move.x * moveSpeed;
 
-            //Grabing the current upwards momentum to avoid freezing mid air
+            //Grabing the current upwards mom   entum to avoid freezing mid air
             Vector3 curVelo = new Vector3(0, rb.velocity.y, 0);
 
             //Setting the momentum to the above vectors
