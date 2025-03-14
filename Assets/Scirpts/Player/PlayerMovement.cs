@@ -25,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundCheckRange;
     [SerializeField] private LayerMask groundCheckLayermask;
     private bool grounded = false;
+
+    [SerializeField] private float gravity;
     #endregion
 
     #region camera
@@ -48,12 +50,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashDist;
     [SerializeField] private float performedDist;
     [SerializeField] private float dashSpeed;
-
+    [SerializeField] private float dashSlowdownDist;
     [SerializeField] private float dashCD;
     [SerializeField] private bool canDash;
 
     [SerializeField] private LayerMask normalLayerMask;
     [SerializeField] private LayerMask dashLayerMask;
+
+    [SerializeField] private AnimationCurve dashCurve;
+
 
     //Dash check
     [SerializeField] private Vector3 checkBoxSizeHalf;
@@ -75,7 +80,15 @@ public class PlayerMovement : MonoBehaviour
         //Setting variables
         moveSpeed = normMoveSpeed;
         jumpHeight = normJumpHeight;
+
+        Keyframe[] keyframes = dashCurve.keys;
+
+        keyframes[1].value = dashSpeed;
+        keyframes[1].time = dashSlowdownDist;
+
+        dashCurve.keys = keyframes;
     }
+
     public void MovePlayer(InputAction.CallbackContext ctx)
     {
         //If button W,A,S or D is pressed set move
@@ -94,12 +107,45 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
         }
     }
-    
+    public void Dash(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed && !dashing && canDash)
+        {
+            performedDist = 0;
+            lastPos = transform.position;
+            dashing = true;
+
+            for (int i = 0; coliders.Length > i; i++)
+            {
+                coliders[i].excludeLayers = dashLayerMask;
+            }
+
+            StartCoroutine(DashCD());
+        }
+    }
+
     private IEnumerator DashCD()
     {
         canDash = false;
         yield return new WaitForSeconds(5);
         canDash = true;
+    }
+
+    private void EndDash()
+    {
+        for (int i = 0; coliders.Length > i; i++)
+        {
+            coliders[i].excludeLayers = normalLayerMask;
+        }
+
+        dashing = false;
+        rb.useGravity = true;
+    }
+
+    //Tutorial https://unity.com/blog/games/animation-curves-the-ultimate-design-lever 
+    private float EvaluateDashCurve(float time)
+    {
+        return dashCurve.Evaluate(time);
     }
 
     public void Crouch(InputAction.CallbackContext ctx)
@@ -126,7 +172,13 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
-        if (!dashing)   
+
+        MoveCam();
+    }
+
+    private void FixedUpdate()
+    {
+        if (!dashing)
         {
             //Vector3 dir = new Vector3(Camera.main.transform.forward.x,0,Camera.main.transform.forward.z);
 
@@ -143,24 +195,30 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = curMoveX + curMoveZ + curVelo;
 
             GroundCheck();
-        } else
+        }
+        else
         {
-            performedDist += Vector3.Distance(lastPos,transform.position); 
+            performedDist += Vector3.Distance(lastPos, transform.position);
             lastPos = transform.position;
 
             if (performedDist >= dashDist)
             {
                 dashing = false;
-            } else
+            }
+            else
             {
-                rb.velocity = Camera.main.transform.forward * dashSpeed;
+                if (performedDist < (dashDist - dashSlowdownDist))
+                    rb.velocity = Camera.main.transform.forward * dashSpeed;
+                else
+                {
+                    
+                    float velo = EvaluateDashCurve(performedDist - (dashDist - dashSlowdownDist));
+                    rb.velocity = Camera.main.transform.forward * velo;
+                }
+                    
             }
         }
-        MoveCam();
-    }
 
-    private void FixedUpdate()
-    {
         Collider[] hits = Physics.OverlapBox(checkBoxPos.position, checkBoxSizeHalf, Camera.main.transform.rotation, groundCheckLayermask);
 
         if (hits.Length > 0 && dashing)
@@ -174,36 +232,11 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
+            rb.velocity = Vector3.zero;
             EndDash();
         }
     }
-    public void Dash(InputAction.CallbackContext ctx)
-    {
-        if (ctx.performed && !dashing && canDash)
-        {
-            performedDist = 0;
-            lastPos = transform.position;
-            dashing = true;
 
-            for (int i = 0; coliders.Length > i; i++)
-            {
-                coliders[i].excludeLayers = dashLayerMask;
-            }
-
-            StartCoroutine(DashCD());
-        }
-    }
-
-    private void EndDash()
-    {
-        for (int i = 0; coliders.Length > i; i++)
-        {
-            coliders[i].excludeLayers = normalLayerMask;
-        }
-
-        dashing = false;
-        rb.useGravity = true;
-    }
     private void GroundCheck()
     {
         //Checking for objects below the player and setting a bool if yes
