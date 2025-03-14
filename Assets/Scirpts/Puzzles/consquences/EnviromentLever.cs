@@ -17,6 +17,7 @@ public class EnviromentLever : MonoBehaviour
     [SerializeField] private GameObject controllingObject;
     [SerializeField] private bool Active;
 
+    [SerializeField] private bool trigger;
 
     [Header("Moving")]
     [SerializeField] private AnimationCurve moveCurve;
@@ -25,9 +26,19 @@ public class EnviromentLever : MonoBehaviour
     [SerializeField] private Vector3 goalPosition;
     [SerializeField] private Vector3 startPosition;
 
-    private void Awake()
+    [Header("Unlocking")]
+    [SerializeField] Unlockable unlockable;
+
+    private void Start()
     {
         startPosition = controllingObject.transform.position;
+
+        Unlockable temp = controllingObject.GetComponent<Unlockable>();
+        if (temp != null)
+        {
+            unlockable = temp;
+        }
+        
     }
     protected virtual void Activate()
     {
@@ -36,9 +47,9 @@ public class EnviromentLever : MonoBehaviour
         switch (consequence)
         {
             case Consequences.Moving:
-                MoveActivate();
                 break;
             case Consequences.Unlocking:
+                unlockable.SetLock(true);
                 break;
             case Consequences.Dropping:
                 break;
@@ -56,6 +67,7 @@ public class EnviromentLever : MonoBehaviour
                 case Consequences.Moving:
                     break;
                 case Consequences.Unlocking:
+                    unlockable.SetLock(false);
                     break;
                 case Consequences.Dropping:
                     break;
@@ -65,6 +77,19 @@ public class EnviromentLever : MonoBehaviour
 
     private void Update()
     {
+        if (trigger)
+        {
+            if (Active)
+            {
+                Deactivate();
+            }
+            else
+            {
+                Activate();
+            }
+            trigger = false;
+        }
+
         if (Active)
         {
             switch (consequence)
@@ -101,11 +126,6 @@ public class EnviromentLever : MonoBehaviour
                     break;
             }
         }
-    }
-
-    private void MoveActivate()
-    {
-        elapsedTime = 0f;
     }
 
     private float EvaluateMoveCurve(float time)
