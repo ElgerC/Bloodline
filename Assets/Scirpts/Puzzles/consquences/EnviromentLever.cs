@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Scripting.APIUpdating;
 
 enum Consequences
 {
@@ -13,9 +10,9 @@ public class EnviromentLever : MonoBehaviour
 {
     [Header("General")]
     [SerializeField] private Consequences consequence;
-    [SerializeField] private bool permanent;
+    [SerializeField] protected bool permanent;
     [SerializeField] private GameObject controllingObject;
-    [SerializeField] private bool Active;
+    [SerializeField] protected bool Active;
 
     [SerializeField] private bool trigger;
 
@@ -29,7 +26,9 @@ public class EnviromentLever : MonoBehaviour
     [Header("Unlocking")]
     [SerializeField] Unlockable unlockable;
 
-    private void Start()
+    private Rigidbody controllingRB;
+
+    protected virtual void Start()
     {
         startPosition = controllingObject.transform.position;
 
@@ -38,39 +37,52 @@ public class EnviromentLever : MonoBehaviour
         {
             unlockable = temp;
         }
+
+        Rigidbody tempRB = controllingObject.GetComponent<Rigidbody>();
+        if (tempRB != null)
+        {
+            controllingRB = tempRB;
+        }
         
     }
     protected virtual void Activate()
     {
-        Active = true;
-
-        switch (consequence)
-        {
-            case Consequences.Moving:
-                break;
-            case Consequences.Unlocking:
-                unlockable.SetLock(true);
-                break;
-            case Consequences.Dropping:
-                break;
-        }
-    }
-
-    protected virtual void Deactivate()
-    {
-        Active = false;
-
-        if (!permanent)
+        if(!Active) 
         {
             switch (consequence)
             {
                 case Consequences.Moving:
                     break;
                 case Consequences.Unlocking:
-                    unlockable.SetLock(false);
+                    unlockable.SetLock(true);
                     break;
                 case Consequences.Dropping:
+                    controllingRB.isKinematic = false;
                     break;
+            }
+
+            Active = true;
+        }
+    }
+
+    protected virtual void Deactivate()
+    {
+        if(Active)
+        {
+            Active = false;
+
+            if (!permanent)
+            {
+                switch (consequence)
+                {
+                    case Consequences.Moving:
+                        break;
+                    case Consequences.Unlocking:
+                        unlockable.SetLock(false);
+                        break;
+                    case Consequences.Dropping:
+                        break;
+                }
             }
         }
     }

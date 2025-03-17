@@ -1,9 +1,6 @@
 using System.Collections;
-using System.Linq;
-using Unity.XR.GoogleVr;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -44,9 +41,9 @@ public class PlayerMovement : MonoBehaviour
     private Collider[] coliders;
 
     #region
-    private bool dashing = false;
-
     [Header("Dash")]
+    public bool dashing = false;
+
     [SerializeField] private float dashDist;
     [SerializeField] private float performedDist;
     [SerializeField] private float dashSpeed;
