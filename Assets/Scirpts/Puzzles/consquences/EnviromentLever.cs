@@ -87,7 +87,7 @@ public class EnviromentLever : MonoBehaviour
         }
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (trigger)
         {

@@ -37,13 +37,6 @@ public class BoxScript : MonoBehaviour, IInteractable
             force = otherRb.velocity.x;
         }
 
-        body.AddForce(launchDir * Mathf.Abs(force), ForceMode.Impulse);
-    }
-    private void Update()
-    {
-        if (body.velocity.magnitude <= minSpeed)
-        {
-            body.isKinematic = true;
-        } 
+        body.AddForce(launchDir * Mathf.Abs(force) * body.mass, ForceMode.Impulse);
     }
 }
