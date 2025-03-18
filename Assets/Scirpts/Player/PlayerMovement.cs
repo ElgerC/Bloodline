@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     #region movement
     [Header("WASD Movement")]
-    public bool canMove;
+    public bool canMove = true;
     [SerializeField] private float normMoveSpeed;
     [SerializeField] private float crouchMoveSpeed;
 
@@ -98,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
     public void Jump(InputAction.CallbackContext ctx)
     {
         //Checking if the player is grounded
-        if (ctx.performed && grounded && !dashing)
+        if (ctx.performed && grounded && !dashing && canMove)
         {
             //giving the player a boost of upwards momentum
             rb.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
@@ -106,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
     }
     public void Dash(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && !dashing && canDash)
+        if (ctx.performed && !dashing && canDash && canMove)
         {
             performedDist = 0;
             lastPos = transform.position;
@@ -169,52 +169,62 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
-
-        MoveCam();
+        if(canMove)
+        {
+            MoveCam();
+        } 
     }
 
     private void FixedUpdate()
     {
-        if (!dashing)
+        if(canMove)
         {
-            //Vector3 dir = new Vector3(Camera.main.transform.forward.x,0,Camera.main.transform.forward.z);
-
-            //Calculating the players input to movement directions
-            Vector3 curMoveZ = transform.forward.normalized * move.y * moveSpeed;
-            Vector3 curMoveX = transform.right.normalized * move.x * moveSpeed;
-
-            //Grabing the current upwards mom   entum to avoid freezing mid air
-            Vector3 curVelo = new Vector3(0, rb.velocity.y, 0);
-
-            //Setting the momentum to the above vectors
-
-            if (Mathf.Abs(rb.velocity.magnitude) < Mathf.Abs((curMoveX + curMoveZ + curVelo).magnitude))
-                rb.velocity = curMoveX + curMoveZ + curVelo;
-
-            GroundCheck();
-        }
-        else
-        {
-            performedDist += Vector3.Distance(lastPos, transform.position);
-            lastPos = transform.position;
-
-            if (performedDist >= dashDist)
+            if (!dashing)
             {
-                dashing = false;
+                //Vector3 dir = new Vector3(Camera.main.transform.forward.x,0,Camera.main.transform.forward.z);
+
+                //Calculating the players input to movement directions
+                Vector3 curMoveZ = transform.forward.normalized * move.y * moveSpeed;
+                Vector3 curMoveX = transform.right.normalized * move.x * moveSpeed;
+
+                //Grabing the current upwards mom   entum to avoid freezing mid air
+                Vector3 curVelo = new Vector3(0, rb.velocity.y, 0);
+
+                //Setting the momentum to the above vectors
+
+                if (Mathf.Abs(rb.velocity.magnitude) < Mathf.Abs((curMoveX + curMoveZ + curVelo).magnitude))
+                    rb.velocity = curMoveX + curMoveZ + curVelo;
+
+                GroundCheck();
             }
             else
             {
-                if (performedDist < (dashDist - dashSlowdownDist))
-                    rb.velocity = Camera.main.transform.forward * dashSpeed;
+                performedDist += Vector3.Distance(lastPos, transform.position);
+                lastPos = transform.position;
+
+                if (performedDist >= dashDist)
+                {
+                    dashing = false;
+                }
                 else
                 {
-                    
-                    float velo = EvaluateDashCurve(performedDist - (dashDist - dashSlowdownDist));
-                    rb.velocity = Camera.main.transform.forward * velo;
+                    if (performedDist < (dashDist - dashSlowdownDist))
+                        rb.velocity = Camera.main.transform.forward * dashSpeed;
+                    else
+                    {
+
+                        float velo = EvaluateDashCurve(performedDist - (dashDist - dashSlowdownDist));
+                        rb.velocity = Camera.main.transform.forward * velo;
+                    }
+
                 }
-                    
             }
         }
+        else
+        {
+            rb.velocity = Vector3.zero;
+        }
+
 
         Collider[] hits = Physics.OverlapBox(checkBoxPos.position, checkBoxSizeHalf, Camera.main.transform.rotation, groundCheckLayermask);
 
