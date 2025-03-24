@@ -335,26 +335,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54448a87110105241b97b5803715108e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canMove: 1
   normMoveSpeed: 3
   crouchMoveSpeed: 2
-  normJumpHeight: 50
-  crouchJumpHeight: 25
+  normJumpHeight: 100
+  crouchJumpHeight: 50
   groundCheckRange: 1.5
   groundCheckLayermask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 1719
+  gravity: 0
   sensX: 120
   sensY: 120
-  coliders: []
-  dashDist: 15
-  dashDur: 0.1
-  endingDur: 0
+  dashing: 0
+  dashDist: 3
+  performedDist: 0
+  dashSpeed: 20
+  dashSlowdownDist: 0.5
+  dashCD: 2
+  canDash: 1
   normalLayerMask:
     serializedVersion: 2
     m_Bits: 0
   dashLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  dashCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 73.78889
+      outSlope: 73.78889
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.55857503
+      outWeight: 0.13941339
+    - serializedVersion: 3
+      time: 0.045711517
+      value: 1.2216644
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 1
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   checkBoxSizeHalf: {x: 0.39, y: 0.47, z: 0.16}
   checkBoxPos: {fileID: 6278687725409394856}
 --- !u!54 &481740756837361440
@@ -365,7 +394,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2626005286073207417}
   serializedVersion: 4
-  m_Mass: 10
+  m_Mass: 15
   m_Drag: 1
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -381,7 +410,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!95 &7705597116901271602
@@ -430,7 +459,7 @@ Transform:
   m_GameObject: {fileID: 6084823598590328474}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.25, z: 0.45}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0.732}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
