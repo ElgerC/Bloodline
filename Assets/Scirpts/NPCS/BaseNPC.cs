@@ -20,7 +20,7 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
 
     [SerializeField] protected EnemyStates state;
 
-    [SerializeField] private float moveSpeed;
+    [SerializeField] protected float moveSpeed;
 
     [SerializeField] private Collider col;
 
