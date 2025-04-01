@@ -5,6 +5,9 @@ using UnityEngine.AI;
 
 public class GuardScript : BaseNPC
 {
+    [Header("General")]
+    [SerializeField] private float attackDist;
+
     #region Searching
     [Header ("Searching")]
     [SerializeField] int CheckAmount;
@@ -21,6 +24,12 @@ public class GuardScript : BaseNPC
     }
     protected override void Allerted()
     {
+        if (Vector3.Distance(transform.position, player.transform.position) <= attackDist)
+        {
+            state = EnemyStates.conectionPlayer;
+            agent.ResetPath();
+        }
+
         agent.SetDestination(player.transform.position);
     }
 

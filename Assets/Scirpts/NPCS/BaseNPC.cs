@@ -38,7 +38,7 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
 
     #endregion
 
-    private void Awake()
+    protected virtual void Awake()
     {
         state = EnemyStates.baseBehaviour;
         player = GameObject.FindGameObjectWithTag("Player");
@@ -57,12 +57,6 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     {
         state = EnemyStates.dead;
         col.enabled = false;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (state != EnemyStates.dead && collision.transform.tag == "Player")
-            state = EnemyStates.conectionPlayer;
     }
     private void Update()
     {
