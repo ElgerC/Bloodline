@@ -19,10 +19,7 @@ public class CivilianScript : BaseNPC
     #region backingOff
     [Header("Alerted")]
     [SerializeField] private float slowedSpeed;
-
     #endregion
-
-
 
     #region baseBehaviour
     [Header("BaseBehaviour")]

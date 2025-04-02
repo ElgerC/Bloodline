@@ -30,7 +30,7 @@ public class EnviromentLever : MonoBehaviour
 
     protected virtual void Start()
     {
-        startPosition = controllingObject.transform.position;
+        startPosition = controllingObject.transform.localPosition;
 
         Unlockable temp = controllingObject.GetComponent<Unlockable>();
         if (temp != null)
@@ -112,7 +112,7 @@ public class EnviromentLever : MonoBehaviour
 
                     Vector3 pos = Vector3.Lerp(startPosition, goalPosition, EvaluateMoveCurve(elapsedTime));
 
-                    controllingObject.transform.position = pos;
+                    controllingObject.transform.localPosition = pos;
                     break;
                 case Consequences.Unlocking:
                     break;
@@ -130,7 +130,7 @@ public class EnviromentLever : MonoBehaviour
 
                     Vector3 pos = Vector3.Lerp(startPosition, goalPosition, EvaluateMoveCurve(elapsedTime));
 
-                    controllingObject.transform.position = pos;
+                    controllingObject.transform.localPosition = pos;
                     break;
                 case Consequences.Unlocking:
                     break;
