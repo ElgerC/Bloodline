@@ -30,7 +30,7 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     #region Sight
     [SerializeField] private float viewAngle;
 
-    [SerializeField] private float viewDistance;
+    [SerializeField] protected float viewDistance;
     protected GameObject player;
     protected Vector3 lastPlayerPos;
 
@@ -57,6 +57,8 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     {
         state = EnemyStates.dead;
         col.enabled = false;
+        OnDeath();
+        Destroy(gameObject);
     }
     private void Update()
     {
@@ -116,7 +118,12 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
 
     }
 
-    private bool VisionCheck()
+    protected virtual void OnDeath()
+    {
+
+    }
+
+    protected virtual bool VisionCheck()
     {
         Vector3 dir = player.transform.position - transform.position;
         if (Vector3.Angle(transform.forward, dir) < viewAngle)
@@ -145,5 +152,10 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     {
         if (player != null)
             Gizmos.DrawRay(transform.position, player.transform.position - transform.position);
+    }
+
+    public virtual void Allert()
+    {
+
     }
 }

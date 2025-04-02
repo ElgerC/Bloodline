@@ -7,7 +7,13 @@ public class CivilianScript : BaseNPC
 {
     #region runningAway
     [Header("RunningAway")]
+    [SerializeField] private LayerMask screamMask;
+    [SerializeField] private float screamDist;
+
+    [SerializeField] private bool running;
     [SerializeField] private GameObject[] exitPoints;
+    [SerializeField] private float runTime;
+    [SerializeField] private float runSpeed;
     #endregion
 
     #region backingOff
@@ -31,33 +37,40 @@ public class CivilianScript : BaseNPC
 
     protected override void BaseBehaviour()
     {
-        agent.SetDestination(roamGoal);
-        agent.speed = moveSpeed;
+        if (!running)
+        {
+            agent.SetDestination(roamGoal);
+            agent.speed = moveSpeed;
 
-        if (reasignPos)
-        {
-            roamGoal = FindPos();
-            reasignPos = false;
+            if (reasignPos)
+            {
+                roamGoal = FindPos();
+                reasignPos = false;
+            }
+            else if (Vector3.Distance(transform.position, roamGoal) < 2 && !timerActive)
+            {
+
+                StartCoroutine(ReasignPosTimer(1));
+            }
         }
-        else if (Vector3.Distance(transform.position, roamGoal)<2 && !timerActive) 
+        else if (Vector3.Distance(transform.position,agent.destination) < 1)
         {
-            
-            StartCoroutine(ReasignPosTimer(1));
+            Destroy(gameObject);
         }
     }
 
     private Vector3 FindPos()
-    { 
+    {
         Vector3 pos = Vector3.zero;
 
-        while (pos == Vector3.zero) 
+        while (pos == Vector3.zero)
         {
-            
-            Vector3 tempPos = new Vector3(roamPoint.transform.position.x + Random.Range(-roamDist, roamDist),roamPoint.transform.position.y, roamPoint.transform.position.z + Random.Range(-roamDist, roamDist));
+
+            Vector3 tempPos = new Vector3(roamPoint.transform.position.x + Random.Range(-roamDist, roamDist), roamPoint.transform.position.y, roamPoint.transform.position.z + Random.Range(-roamDist, roamDist));
 
             NavMesh.SamplePosition(tempPos, out NavMeshHit hit, 5, sightLayerMask);
 
-            if (Vector3.Distance(roamPoint.transform.position, hit.position) <= roamDist) 
+            if (Vector3.Distance(roamPoint.transform.position, hit.position) <= roamDist)
             {
                 pos = hit.position;
             }
@@ -78,9 +91,59 @@ public class CivilianScript : BaseNPC
         agent.speed = slowedSpeed;
 
         transform.LookAt(player.transform);
+        if (Vector3.Distance(transform.position, player.transform.position) < viewDistance - 1)
+        {
+            Vector3 pos = transform.position + -transform.forward;
+            agent.SetDestination(pos);
+        }
+    }
 
-        Vector3 pos = transform.position + -transform.forward;
+    protected override void LOSBroken()
+    {
+        agent.SetDestination(roamGoal);
+        reasignPos = false;
+        state = EnemyStates.baseBehaviour;
+    }
 
-        agent.SetDestination(pos);
+    protected override void OnDeath()
+    {
+        Collider[] cols = Physics.OverlapSphere(transform.position, screamDist, screamMask);
+        for (int i = 0; i < cols.Length; i++)
+        {
+            cols[i].GetComponent<BaseNPC>().Allert();
+        }
+    }
+
+    public override void Allert()
+    {
+        GameObject exitPoint = exitPoints[0];
+        for (int i = 0; i < exitPoints.Length; i++)
+        {
+            if (Vector3.Distance(transform.position, exitPoints[i].transform.position) < Vector3.Distance(transform.position, exitPoint.transform.position))
+            {
+                exitPoint = exitPoints[i];
+            }
+        }
+
+        state = EnemyStates.baseBehaviour;
+        StartCoroutine(RunTime());
+        agent.SetDestination(exitPoint.transform.position);
+    }
+
+    private IEnumerator RunTime()
+    {
+        agent.speed = runSpeed;
+        running = true;
+        yield return new WaitForSeconds(runTime);
+        running = false;
+        agent.speed = moveSpeed;
+    }
+
+    protected override bool VisionCheck()
+    {
+        if (!running)
+            return base.VisionCheck();
+        else 
+            return false;
     }
 }
