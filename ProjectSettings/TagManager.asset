@@ -19,8 +19,8 @@ TagManager:
   - Unwalkable
   - NPC
   - BakeIgnore
-  - 
-  - 
+  - DashIgnore
+  - Enemy
   - 
   - 
   - 

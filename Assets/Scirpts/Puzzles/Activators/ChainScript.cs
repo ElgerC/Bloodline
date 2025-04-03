@@ -22,7 +22,7 @@ public class ChainScript : EnviromentLever
         {
             Activate();
 
-            if ( breakable )
+            if (breakable)
             {
                 Destroy(gameObject);
             }

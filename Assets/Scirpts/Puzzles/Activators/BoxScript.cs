@@ -12,6 +12,11 @@ public class BoxScript : MonoBehaviour, IInteractable
     [SerializeField] private float speed;
     [SerializeField] private float minSpeed;
 
+    [SerializeField] private float fallMinSpeed;
+    [SerializeField] private bool falling;
+    [SerializeField] private float allertDist;
+    [SerializeField] private LayerMask allertMask;
+
     private Rigidbody body;
 
     private void Awake()
@@ -38,5 +43,27 @@ public class BoxScript : MonoBehaviour, IInteractable
         }
 
         body.AddForce(launchDir * Mathf.Abs(force) * body.mass, ForceMode.Impulse);
+    }
+
+    private void Update()
+    {
+        if (body.velocity.y < fallMinSpeed)
+        {
+            falling = true;
+        } else { falling = false; }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (falling)
+        {
+            Debug.Log("TST");
+            Collider[] cols = Physics.OverlapSphere(transform.position, allertDist, allertMask);
+
+            for (int i = 0; i < cols.Length; i++)
+            {
+                cols[i].GetComponent<BaseNPC>().Distract(gameObject);
+            }
+        }
     }
 }

@@ -32,6 +32,7 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
 
     [SerializeField] protected float viewDistance;
     protected GameObject player;
+    protected GameObject POI;
     protected Vector3 lastPlayerPos;
 
     [SerializeField] protected LayerMask sightLayerMask;
@@ -73,7 +74,7 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
                 }
                 break;
             case EnemyStates.allerted:
-                lastPlayerPos = player.transform.position;
+                lastPlayerPos = POI.transform.position;
 
                 if (!VisionCheck())
                 {
@@ -134,10 +135,12 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
             {
                 if (hit.transform.tag == "Player")
                 {
+                    POI = player;
                     return true;
                 }
                 else if (state == EnemyStates.allerted)
                 {
+                    POI = null;
                     SightBroken.Invoke();
                     state = EnemyStates.LOSBroken;
                     return true;
@@ -158,4 +161,14 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     {
 
     }
+    public void Distract(GameObject obj)
+    {
+        Debug.Log("distracted");
+
+        POI = obj;
+        lastPlayerPos = POI.transform.position;
+        SightBroken.Invoke();
+        state = EnemyStates.LOSBroken;
+    }
+
 }
