@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -40,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Collider[] coliders;
 
-    #region
+    #region dash
     [Header("Dash")]
     public bool dashing = false;
 
@@ -62,6 +63,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform checkBoxPos;
 
     private Vector3 lastPos;
+
+    [SerializeField] private Slider slider;
+    private float sliderTimer = 0;
     #endregion
     private void Awake()
     {
@@ -84,6 +88,9 @@ public class PlayerMovement : MonoBehaviour
         keyframes[1].time = dashSlowdownDist;
 
         dashCurve.keys = keyframes;
+
+        slider.maxValue = dashCD;
+        slider.value = dashCD;
     }
 
     public void MovePlayer(InputAction.CallbackContext ctx)
@@ -108,28 +115,31 @@ public class PlayerMovement : MonoBehaviour
     {
         if (ctx.performed && !dashing && canDash && canMove)
         {
+            canDash = false;
+
             performedDist = 0;
             lastPos = transform.position;
             dashing = true;
+            rb.useGravity = false;
+            sliderTimer = 0;
 
             for (int i = 0; coliders.Length > i; i++)
             {
                 coliders[i].excludeLayers = dashLayerMask;
             }
-
-            StartCoroutine(DashCD());
         }
     }
 
     private IEnumerator DashCD()
     {
-        canDash = false;
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(dashCD);
         canDash = true;
     }
 
     private void EndDash()
     {
+        StartCoroutine(DashCD());
+
         for (int i = 0; coliders.Length > i; i++)
         {
             coliders[i].excludeLayers = normalLayerMask;
@@ -169,15 +179,21 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
-        if(canMove)
+        if (!canDash)
+        {
+            slider.value = sliderTimer;
+            sliderTimer += Time.deltaTime;
+        }
+
+        if (canMove)
         {
             MoveCam();
-        } 
+        }
     }
 
     private void FixedUpdate()
     {
-        if(canMove)
+        if (canMove)
         {
             if (!dashing)
             {
@@ -204,7 +220,8 @@ public class PlayerMovement : MonoBehaviour
 
                 if (performedDist >= dashDist)
                 {
-                    dashing = false;
+                    EndDash();
+                    
                 }
                 else
                 {
@@ -237,9 +254,15 @@ public class PlayerMovement : MonoBehaviour
                 {
                     interact.Interact(gameObject);
                 }
+                Debug.Log(hits[i].name);
+
+                if (hits[i].tag != "Enemy")
+                    rb.velocity = Vector3.zero;
+
             }
 
-            rb.velocity = Vector3.zero;
+
+
             EndDash();
         }
     }

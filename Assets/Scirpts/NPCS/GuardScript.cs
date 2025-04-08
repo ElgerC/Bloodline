@@ -24,7 +24,7 @@ public class GuardScript : BaseNPC
     }
     protected override void Allerted()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) <= attackDist)
+        if (Vector3.Distance(transform.position, player.transform.position) <= attackDist && state != EnemyStates.dead)
         {
             state = EnemyStates.conectionPlayer;
             agent.ResetPath();
@@ -49,9 +49,8 @@ public class GuardScript : BaseNPC
 
             Vector3 tstPos = new Vector3(lastPlayerPos.x + rndX, lastPlayerPos.y, lastPlayerPos.z + rndZ);
 
-            NavMesh.SamplePosition(tstPos, out NavMeshHit hit, 5, sightLayerMask);
+            NavMesh.SamplePosition(tstPos, out NavMeshHit hit, 15, sightLayerMask);
 
-            Debug.Log(hit.position);
             checkPositions.Add(hit.position);
         }
 
@@ -60,6 +59,8 @@ public class GuardScript : BaseNPC
 
     protected void Patrol()
     {
+        if(patrolIndex > RoamPoints.Count) patrolIndex = 0;
+
         if (Vector3.Distance(transform.position, RoamPoints[patrolIndex]) < 2)
         {
             if (patrolIndex == RoamPoints.Count - 1) 

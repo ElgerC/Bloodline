@@ -74,7 +74,7 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
                 }
                 break;
             case EnemyStates.allerted:
-                lastPlayerPos = POI.transform.position;
+                lastPlayerPos = player.transform.position;
 
                 if (!VisionCheck())
                 {

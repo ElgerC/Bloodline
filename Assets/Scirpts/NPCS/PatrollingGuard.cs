@@ -8,7 +8,7 @@ public class PatrollingGuard : GuardScript
     [Header ("Patrolling Guard")]
     [SerializeField] List<Vector3> basePatrolPoints = new List<Vector3>();
     [SerializeField] int basePatrolIndex;
-
+    #endregion
     protected override void Start()
     {
         base.Start();
@@ -25,6 +25,4 @@ public class PatrollingGuard : GuardScript
         patrolIndex = basePatrolIndex;
         RoamPoints = basePatrolPoints;
     }
-
-    #endregion
 }
