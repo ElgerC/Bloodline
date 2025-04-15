@@ -100,6 +100,11 @@ public class CivilianScript : BaseNPC
         agent.SetDestination(roamGoal);
         reasignPos = false;
         state = EnemyStates.baseBehaviour;
+
+        if (Vector3.Distance(transform.position, roamGoal) < 1)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     protected override void OnDeath()

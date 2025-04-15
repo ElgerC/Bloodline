@@ -21,16 +21,27 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     [SerializeField] protected EnemyStates state;
 
     [SerializeField] protected float moveSpeed;
+    [SerializeField] protected float maxMoveSpeed;
+    [SerializeField] protected float minMoveSpeed;
+
+    [SerializeField] protected float infamyImpact;
 
     [SerializeField] private Collider col;
 
     protected NavMeshAgent agent;
 
+    private InfamyManager infamyManager;
+
     #endregion
     #region Sight
     [SerializeField] private float viewAngle;
+    [SerializeField] private float maxViewAngle;
+    [SerializeField] private float minViewAngle;
 
     [SerializeField] protected float viewDistance;
+    [SerializeField] private float maxViewDistance;
+    [SerializeField] protected float minViewDistance;
+
     protected GameObject player;
     protected GameObject POI;
     protected Vector3 lastPlayerPos;
@@ -47,6 +58,8 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
         col = GetComponent<Collider>();
 
         agent = GetComponent<NavMeshAgent>();
+
+        infamyManager = InfamyManager.infamyInstance;
     }
 
     protected virtual void Start()
@@ -63,6 +76,18 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     }
     private void Update()
     {
+        if (maxMoveSpeed * (infamyManager.infamyLevel / 100) > minMoveSpeed)
+            moveSpeed = maxMoveSpeed * (infamyManager.infamyLevel / 100);
+        else moveSpeed = minMoveSpeed;
+
+        if (maxViewAngle * (infamyManager.infamyLevel / 100) > minViewAngle)
+            viewAngle = maxViewAngle * (infamyManager.infamyLevel / 100);
+        else viewAngle = minViewAngle;
+
+        if (maxViewDistance * (infamyManager.infamyLevel / 100) > minViewDistance)
+            viewDistance = maxViewDistance * (infamyManager.infamyLevel / 100);
+        else viewDistance = minViewDistance;
+
         switch (state)
         {
             case EnemyStates.baseBehaviour:
@@ -121,7 +146,7 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
 
     protected virtual void OnDeath()
     {
-
+        infamyManager.ChangeInfamy(-infamyImpact);
     }
 
     protected virtual bool VisionCheck()

@@ -54,6 +54,7 @@ public class GuardScript : BaseNPC
             checkPositions.Add(hit.position);
         }
 
+        patrolIndex = 0;
         RoamPoints = checkPositions;
     }
 

@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3766902802362581514}
+  - component: {fileID: 1845065956475211212}
   - component: {fileID: 581847841848731061}
   - component: {fileID: 517554264373466273}
   - component: {fileID: 7991091915471755942}
   - component: {fileID: 6857345628230940124}
   - component: {fileID: 4471790861595883221}
-  - component: {fileID: 1845065956475211212}
   m_Layer: 15
   m_Name: GuardingEnemy
   m_TagString: Enemy
@@ -38,6 +38,62 @@ Transform:
   - {fileID: 4586646633933230490}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1845065956475211212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068070328280883714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1be7ff15fb0bc1d41a7d3bef9eb29da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SightBroken:
+    m_PersistentCalls:
+      m_Calls: []
+  state: 0
+  moveSpeed: 1
+  col: {fileID: 0}
+  viewAngle: 60
+  viewDistance: 10
+  sightLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  attackDist: 1
+  CheckAmount: 3
+  RoamPoints: []
+  patrolIndex: 0
+  guardingPosition: {x: 0, y: 0, z: 0}
+  guardingDirection: {x: 0, y: 0, z: 0}
+  guardingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 4
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  guardingAngle: 90
+  guardingTime: 0
+  guardDir: 1
 --- !u!33 &581847841848731061
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -160,62 +216,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1845065956475211212
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2068070328280883714}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1be7ff15fb0bc1d41a7d3bef9eb29da5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SightBroken:
-    m_PersistentCalls:
-      m_Calls: []
-  state: 0
-  moveSpeed: 1
-  col: {fileID: 0}
-  viewAngle: 60
-  viewDistance: 10
-  sightLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  attackDist: 1
-  CheckAmount: 3
-  RoamPoints: []
-  patrolIndex: 0
-  guardingPosition: {x: 0, y: 0, z: 0}
-  guardingDirection: {x: 0, y: 0, z: 0}
-  guardingCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 4
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  guardingAngle: 90
-  guardingTime: 0
-  guardDir: 1
 --- !u!1 &8316119577542929943
 GameObject:
   m_ObjectHideFlags: 0
