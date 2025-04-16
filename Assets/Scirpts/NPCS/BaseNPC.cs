@@ -58,13 +58,13 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
         col = GetComponent<Collider>();
 
         agent = GetComponent<NavMeshAgent>();
-
-        infamyManager = InfamyManager.infamyInstance;
     }
 
     protected virtual void Start()
     {
         agent.speed = moveSpeed;
+
+        infamyManager = InfamyManager.infamyInstance;
     }
 
     public void Interact(GameObject other)
@@ -79,6 +79,8 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
         if (maxMoveSpeed * (infamyManager.infamyLevel / 100) > minMoveSpeed)
             moveSpeed = maxMoveSpeed * (infamyManager.infamyLevel / 100);
         else moveSpeed = minMoveSpeed;
+
+        agent.speed = moveSpeed;
 
         if (maxViewAngle * (infamyManager.infamyLevel / 100) > minViewAngle)
             viewAngle = maxViewAngle * (infamyManager.infamyLevel / 100);

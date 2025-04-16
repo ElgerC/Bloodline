@@ -56,6 +56,7 @@ public class GuardScript : BaseNPC
 
         patrolIndex = 0;
         RoamPoints = checkPositions;
+        StartCoroutine(PatrolTimer());
     }
 
     protected void Patrol()
@@ -81,5 +82,11 @@ public class GuardScript : BaseNPC
     {
         patrolIndex = 0;
         state = EnemyStates.baseBehaviour;
+    }
+
+    private IEnumerator PatrolTimer()
+    { 
+        yield return new WaitForSeconds(10);
+        EndPatrol();
     }
 }

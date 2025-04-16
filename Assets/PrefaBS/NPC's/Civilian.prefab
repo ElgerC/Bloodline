@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6283197231732871215}
+  - component: {fileID: 6854755897423654159}
   - component: {fileID: 6057944327817086362}
   - component: {fileID: 6116908399198247900}
   - component: {fileID: 298855709145212708}
   - component: {fileID: 6262007419626086889}
   - component: {fileID: 4205655017423468316}
-  - component: {fileID: 6854755897423654159}
   m_Layer: 12
   m_Name: Civilian
   m_TagString: Enemy
@@ -38,6 +38,51 @@ Transform:
   - {fileID: 8952595904352850711}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6854755897423654159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7481326866801988801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c44657279b660f4d924362c350c5668, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SightBroken:
+    m_PersistentCalls:
+      m_Calls: []
+  state: 0
+  moveSpeed: 1
+  maxMoveSpeed: 2
+  minMoveSpeed: 1
+  infamyImpact: 2
+  col: {fileID: 0}
+  viewAngle: 45
+  maxViewAngle: 55
+  minViewAngle: 35
+  viewDistance: 8
+  maxViewDistance: 16
+  minViewDistance: 0
+  sightLayerMask:
+    serializedVersion: 2
+    m_Bits: 3319
+  screamMask:
+    serializedVersion: 2
+    m_Bits: 4096
+  screamDist: 4
+  running: 0
+  exitPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  runTime: 8
+  runSpeed: 1.4
+  slowedSpeed: 0.4
+  roamPoint: {fileID: 0}
+  roamDist: 4
+  reasignPos: 1
+  timerActive: 0
 --- !u!33 &6057944327817086362
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -66,7 +111,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: fddae2092dad6174fb9ba2b21e8de5f1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -160,44 +205,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &6854755897423654159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7481326866801988801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c44657279b660f4d924362c350c5668, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SightBroken:
-    m_PersistentCalls:
-      m_Calls: []
-  state: 0
-  moveSpeed: 1
-  col: {fileID: 0}
-  viewAngle: 45
-  viewDistance: 8
-  sightLayerMask:
-    serializedVersion: 2
-    m_Bits: 3319
-  screamMask:
-    serializedVersion: 2
-    m_Bits: 4096
-  screamDist: 4
-  running: 0
-  exitPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  runTime: 8
-  runSpeed: 1.4
-  slowedSpeed: 0.4
-  roamPoint: {fileID: 0}
-  roamDist: 4
-  reasignPos: 1
-  timerActive: 0
 --- !u!1 &9122074963202237313
 GameObject:
   m_ObjectHideFlags: 0
@@ -209,7 +216,6 @@ GameObject:
   - component: {fileID: 8952595904352850711}
   - component: {fileID: 8521146990261005352}
   - component: {fileID: 7296704254508414792}
-  - component: {fileID: 6818590578107130833}
   m_Layer: 10
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -226,7 +232,7 @@ Transform:
   m_GameObject: {fileID: 9122074963202237313}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.4649999, z: 0.142}
+  m_LocalPosition: {x: 0, y: 0.4649999, z: 0.167}
   m_LocalScale: {x: 0.69, y: 0.6015, z: 0.69}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -282,24 +288,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6818590578107130833
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9122074963202237313}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
