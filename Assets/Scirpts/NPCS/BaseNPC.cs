@@ -75,6 +75,13 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
     {
         state = EnemyStates.dead;
         col.enabled = false;
+
+        GoalScript scrpt = GetComponent<GoalScript>();
+        if (scrpt != null)
+        {
+            scrpt.Trigger();
+        }
+
         OnDeath();
         Destroy(gameObject);
     }

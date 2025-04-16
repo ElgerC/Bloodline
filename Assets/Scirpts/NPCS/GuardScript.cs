@@ -27,6 +27,8 @@ public class GuardScript : BaseNPC
     }
     protected override void Allerted()
     {
+        animator.SetBool("Walking", true);
+
         if (Vector3.Distance(transform.position, player.transform.position) <= attackDist && state != EnemyStates.dead)
         {
             state = EnemyStates.conectionPlayer;

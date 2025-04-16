@@ -16,6 +16,6 @@ public class DeathScreen : MonoBehaviour
         //setting the cursor and hiding it
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        SceneManager.LoadScene("Level1");
+        SceneManager.LoadScene(2);
     }
 }

@@ -17,7 +17,7 @@ public class GoalScript : MonoBehaviour
             NextScene();
     }
 
-    private void OnDestroy()
+    public void Trigger()
     {
         if (goalType == GoalType.target) NextScene();
     }

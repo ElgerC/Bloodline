@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
     public void LoadNextScene()
     {
         SceneManager.LoadScene(sceneIndex);
