@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class InfamyManager : MonoBehaviour
@@ -16,24 +17,32 @@ public class InfamyManager : MonoBehaviour
 
     private void OnEnable()
     {
-        if(infamyInstance == null)
+        if (infamyInstance == null)
         {
             infamyInstance = this;
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
             DontDestroyOnLoad(gameObject);
-        }else 
+        }
+        else
         {
             Destroy(gameObject);
         }
     }
 
-    private void Awake()
+    void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
     {
         civilians = FindObjectsOfType<CivilianScript>().ToList();
+        infamyLevelSlider = GameObject.FindWithTag("InfamyBar").GetComponent<Slider>();
     }
 
     private void Update()
     {
-        infamyLevel -= (civilians.Count*Time.deltaTime)/infamyReductionTickSpeed;
+        if (civilians.Count > 0)
+            infamyLevel -= (civilians.Count * Time.deltaTime) / infamyReductionTickSpeed;
+        else
+            infamyLevel -= (1 * Time.deltaTime) / infamyReductionTickSpeed;
         infamyLevel = Mathf.Clamp(infamyLevel, 0, 100);
 
         infamyLevelSlider.value = infamyLevel;
