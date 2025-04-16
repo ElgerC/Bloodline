@@ -43,6 +43,8 @@ public class GuardingEnemy : GuardScript
         agent.SetDestination(guardingPosition);
         if (Vector3.Distance(transform.localPosition, guardingPosition) < 0.5)
         {
+            animator.SetBool("Walking",false);
+
             agent.ResetPath();
 
             transform.rotation = Quaternion.Euler(0,guardingCurve.Evaluate(guardingTime),0);

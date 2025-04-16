@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
+using System.Text.RegularExpressions;
 
 public class GuardScript : BaseNPC
 {
     [Header("General")]
     [SerializeField] private float attackDist;
+    [SerializeField] private GameObject DeathScreen;
 
     #region Searching
     [Header ("Searching")]
@@ -27,6 +30,11 @@ public class GuardScript : BaseNPC
         if (Vector3.Distance(transform.position, player.transform.position) <= attackDist && state != EnemyStates.dead)
         {
             state = EnemyStates.conectionPlayer;
+            DeathScreen.SetActive(true);
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            player.GetComponent<PlayerMovement>().canTurn = false;
             agent.ResetPath();
         }
 
@@ -37,7 +45,6 @@ public class GuardScript : BaseNPC
     {
         Patrol();
     }
-
     public void GenerateCheckPoints()
     {
         List<Vector3> checkPositions = new List<Vector3>();

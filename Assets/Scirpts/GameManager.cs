@@ -11,21 +11,19 @@ public class GameManager : MonoBehaviour
 
     #region SceneManegment
     [Header("SceneManegment")]
-    [SerializeField] private List<string> scenes = new List<string>();
-    [SerializeField] private int sceneIndex;
+    public int sceneIndex;
     #endregion
     private void OnEnable()
     {
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else 
         {
             Destroy(gameObject);
         }
-
-        DontDestroyOnLoad(gameObject);
     }
     
     public void LoadNextScene()

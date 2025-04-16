@@ -31,10 +31,19 @@ public class InfamyManager : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
     void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
     {
         civilians = FindObjectsOfType<CivilianScript>().ToList();
         infamyLevelSlider = GameObject.FindWithTag("InfamyBar").GetComponent<Slider>();
+    }
+
+    public void InfamyReset()
+    {
+
     }
 
     private void Update()

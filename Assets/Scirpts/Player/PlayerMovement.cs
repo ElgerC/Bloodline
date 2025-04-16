@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region camera
     [Header("Camera")]
+    public bool canTurn = true;
     [SerializeField] private float sensX;
     [SerializeField] private float sensY;
 
@@ -74,7 +75,6 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();
         coliders = GetComponents<Collider>();
 
-        //setting the cursor and hiding it
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -286,21 +286,24 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void MoveCam()
     {
-        //Inspired by https://www.youtube.com/watch?v=f473C43s8nE
+        if (canTurn)
+        {
+            //Inspired by https://www.youtube.com/watch?v=f473C43s8nE
 
-        //Getting the direction the mouse is moving in
-        float mouseX = Input.GetAxisRaw("Mouse X") * sensX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
+            //Getting the direction the mouse is moving in
+            float mouseX = Input.GetAxisRaw("Mouse X") * sensX;
+            float mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
 
-        //removing the input of the saved rotation
-        yRotation += mouseX * Time.fixedDeltaTime;
-        xRotation -= mouseY * Time.fixedDeltaTime;
+            //removing the input of the saved rotation
+            yRotation += mouseX * Time.fixedDeltaTime;
+            xRotation -= mouseY * Time.fixedDeltaTime;
 
-        //Keeping the rotation between 2 values
-        xRotation = Mathf.Clamp(xRotation, -90, 90);
+            //Keeping the rotation between 2 values
+            xRotation = Mathf.Clamp(xRotation, -90, 90);
 
-        transform.localRotation = Quaternion.Euler(0, yRotation, 0);
-        Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-        //setting the player and camera rotation to match with the saved ones
+            transform.localRotation = Quaternion.Euler(0, yRotation, 0);
+            Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+            //setting the player and camera rotation to match with the saved ones
+        }
     }
 }

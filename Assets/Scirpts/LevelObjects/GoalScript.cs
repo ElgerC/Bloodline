@@ -14,11 +14,16 @@ public class GoalScript : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (goalType == GoalType.pickUp)
-            GameManager.instance.LoadNextScene();
+            NextScene();
     }
 
     private void OnDestroy()
     {
-        if(goalType == GoalType.target) GameManager.instance.LoadNextScene();
+        if (goalType == GoalType.target) NextScene();
+    }
+
+    private void NextScene()
+    {
+        GameManager.instance.LoadNextScene();
     }
 }

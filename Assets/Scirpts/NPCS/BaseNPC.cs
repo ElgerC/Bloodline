@@ -28,6 +28,8 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
 
     [SerializeField] private Collider col;
 
+    [SerializeField] protected Animator animator;
+
     protected NavMeshAgent agent;
 
     private InfamyManager infamyManager;
@@ -65,6 +67,8 @@ public abstract class BaseNPC : MonoBehaviour, IInteractable
         agent.speed = moveSpeed;
 
         infamyManager = InfamyManager.infamyInstance;
+
+        animator.SetBool("Walking", true);    
     }
 
     public void Interact(GameObject other)
